@@ -17,9 +17,11 @@ function YoutubeEmbed({ videoId, onReady, onStateChange }: YoutubeEmbedProps) {
     width: "640",
     playerVars: {
       // https://developers.google.com/youtube/player_parameters
-      autoplay: 1,
-      disablekb: 1,
-      controls: 2,
+      //   autoplay: 1,
+      //   disablekb: 1,
+      //   controls: 1,
+      //   enablejsapi: 1,
+      //   mute: 1,
     },
   };
 

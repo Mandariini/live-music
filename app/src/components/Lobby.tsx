@@ -49,6 +49,11 @@ const Lobby = () => {
   const [songList, setSongList] = useState<SongInfo[]>();
   const [videoElement, setVideoElement] = useState<YouTubePlayer>(null);
 
+  if (videoElement) {
+    console.log(videoElement);
+    videoElement.playVideo();
+  }
+
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
@@ -57,7 +62,11 @@ const Lobby = () => {
   }, []);
 
   const onYoutubeEmbedReady = (event: YouTubePlayer) => {
-    setVideoElement(event);
+    setVideoElement(event.target);
+    console.log(event);
+    // event.target.playVideo();
+
+    event.target.loadVideoById(newSongList[0].videoId);
   };
 
   const onYoutubeEmbedStateChange = (event: YouTubeEvent) => {
@@ -69,6 +78,7 @@ const Lobby = () => {
       const newSongList = songList.slice(1);
       setSongList(newSongList);
       setCurrentSong(newSongList[0]);
+      videoElement.loadVideoById(newSongList[0].videoId);
     }
   };
 
@@ -89,7 +99,7 @@ const Lobby = () => {
       </h3>
       <ol>
         {songList.map((song) => (
-          <li>{song.fullName}</li>
+          <li key={song.id}>{song.fullName}</li>
         ))}
       </ol>
     </div>
