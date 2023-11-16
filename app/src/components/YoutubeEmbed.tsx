@@ -1,26 +1,38 @@
-function getId(url) {
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-  const match = url.match(regExp);
+import React from "react";
+import YouTube, {
+  YouTubeProps,
+  YouTubeEvent,
+  YouTubePlayer,
+} from "react-youtube";
 
-  return match && match[2].length === 11 ? match[2] : null;
+interface YoutubeEmbedProps {
+  videoId: string;
+  onReady?: ((event: YouTubePlayer) => void) | undefined;
+  onStateChange?: ((event: YouTubeEvent) => void) | undefined;
 }
 
-const YoutubeEmbed = ({ youtube_url }: { youtube_url: string }) => {
-  const videoId = getId(youtube_url);
+function YoutubeEmbed({ videoId, onReady, onStateChange }: YoutubeEmbedProps) {
+  const opts: YouTubeProps["opts"] = {
+    height: "390",
+    width: "640",
+    playerVars: {
+      // https://developers.google.com/youtube/player_parameters
+      autoplay: 1,
+      disablekb: 1,
+      controls: 2,
+    },
+  };
+
+  console.log(videoId);
 
   return (
-    <div className="video-responsive">
-      <iframe
-        width="853"
-        height="480"
-        src={`https://www.youtube.com/embed/${videoId}`}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        title="Embedded youtube"
-      />
-    </div>
+    <YouTube
+      videoId={videoId}
+      opts={opts}
+      onReady={onReady}
+      onStateChange={onStateChange}
+    />
   );
-};
+}
 
 export default YoutubeEmbed;

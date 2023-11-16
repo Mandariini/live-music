@@ -1,13 +1,16 @@
 import { useParams } from "react-router-dom";
 import YoutubeEmbed from "./YoutubeEmbed";
 
+import { YouTubeEvent, YouTubePlayer } from "react-youtube";
+import { useEffect, useState } from "react";
+
 interface SongInfo {
   id: string;
   fullName: string;
   title?: string;
   artist?: string;
   duration: string;
-  link: string;
+  videoId: string;
   source: string;
 }
 
@@ -18,7 +21,7 @@ const songs: SongInfo[] = [
     title: "Street Fighter",
     artist: "Angerfist",
     duration: "3:46",
-    link: "https://www.youtube.com/watch?v=6YlX2uItv_s",
+    videoId: "6YlX2uItv_s",
     source: "youtube",
   },
   {
@@ -27,7 +30,7 @@ const songs: SongInfo[] = [
     title: "Blah Blah Blah",
     artist: "Armin van Buuren",
     duration: "3:04",
-    link: "https://www.youtube.com/watch?v=QqQVll-MP3I",
+    videoId: "uBQ1wt3VZ4M",
     source: "youtube",
   },
   {
@@ -36,34 +39,59 @@ const songs: SongInfo[] = [
     title: "Bangarang",
     artist: "Skrillex",
     duration: "3:35",
-    link: "https://www.youtube.com/watch?v=YJVmu6yttiw",
-    source: "youtube",
-  },
-  {
-    id: "4",
-    fullName: "Daft Punk - One More Time",
-    title: "One More Time",
-    artist: "Daft Punk",
-    duration: "5:20",
-    link: "https://www.youtube.com/watch?v=FGBhQbmPwH8",
+    videoId: "kn59Yn55Pos",
     source: "youtube",
   },
 ];
 
 const Lobby = () => {
+  const [currentSong, setCurrentSong] = useState<SongInfo>();
+  const [songList, setSongList] = useState<SongInfo[]>();
+  const [videoElement, setVideoElement] = useState<YouTubePlayer>(null);
+
   const { id } = useParams<{ id: string }>();
 
-  const currentSong = songs[0];
-  const listItems = songs.map((song) => <li>{song.fullName}</li>);
+  useEffect(() => {
+    setCurrentSong(songs[0]);
+    setSongList(songs);
+  }, []);
+
+  const onYoutubeEmbedReady = (event: YouTubePlayer) => {
+    setVideoElement(event);
+  };
+
+  const onYoutubeEmbedStateChange = (event: YouTubeEvent) => {
+    if (event.data === 0) {
+      // Video ended
+      console.log("Video ended");
+
+      // Play next song
+      const newSongList = songList.slice(1);
+      setSongList(newSongList);
+      setCurrentSong(newSongList[0]);
+    }
+  };
+
+  if (!currentSong || !songList) {
+    return <div>No songs playing</div>;
+  }
 
   return (
     <div>
       <h2>Lobby {id}</h2>
       <h3>
         Currently playing: {currentSong.fullName} ({currentSong.duration})
-        <YoutubeEmbed youtube_url={currentSong.link} />
+        <YoutubeEmbed
+          videoId={currentSong.videoId ? currentSong.videoId : ""}
+          onReady={onYoutubeEmbedReady}
+          onStateChange={onYoutubeEmbedStateChange}
+        />
       </h3>
-      <ol>{listItems}</ol>
+      <ol>
+        {songList.map((song) => (
+          <li>{song.fullName}</li>
+        ))}
+      </ol>
     </div>
   );
 };
