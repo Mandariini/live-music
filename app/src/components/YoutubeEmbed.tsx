@@ -1,203 +1,152 @@
+import React from "react";
 import { useState } from "react";
 
 import ReactPlayer, { ReactPlayerProps } from "react-player";
+import { OnProgressProps } from "react-player/base";
 
 interface YoutubeEmbedState {
   url: string | null;
-  pip: boolean;
   playing: boolean;
-  controls: boolean;
-  light: boolean;
   volume: number;
   muted: boolean;
   played: number;
   loaded: number;
   duration: number;
-  playbackRate: number;
-  loop: boolean;
   player: ReactPlayerProps["ref"];
+  progress: number;
 }
 
-const YoutubeEmbed = ({ url }: { url: string }) => {
-  //   player: ReactPlayerProps["ref"];
+interface YoutubeEmbedProps {
+  url: string;
+  handleEnded: () => void;
+}
 
-  const [state, setState] = useState<YoutubeEmbedState>({
-    url: url,
-    pip: false,
-    playing: false,
-    controls: false,
-    light: false,
-    volume: 0.8,
-    muted: false,
-    played: 0,
-    loaded: 0,
-    duration: 0,
-    playbackRate: 1.0,
-    loop: false,
-    player: null,
-  });
+const YoutubeEmbed = React.forwardRef(
+  ({ url, handleEnded }: YoutubeEmbedProps, ref) => {
+    //   player: ReactPlayerProps["ref"];
 
-  const load = (url: string) => {
-    setState({
-      ...state,
+    const [state, setState] = useState<YoutubeEmbedState>({
       url: url,
+      playing: false,
+      volume: 0.8,
+      muted: false,
       played: 0,
       loaded: 0,
-      pip: false,
+      duration: 0,
+      player: null,
+      progress: 0,
     });
-  };
 
-  const handlePlayPause = () => {
-    setState({ ...state, playing: !state.playing });
-  };
+    const load = (url: string) => {
+      setState({
+        ...state,
+        url: url,
+        played: 0,
+        loaded: 0,
+      });
+    };
 
-  const handleStop = () => {
-    setState({ ...state, url: null, playing: false });
-  };
+    const handlePlayPause = () => {
+      setState({ ...state, playing: !state.playing });
+    };
 
-  const handleToggleControls = () => {
-    const url = state.url;
+    const handleStop = () => {
+      setState({ ...state, url: null, playing: false });
+    };
 
-    // setState(
-    //   {
-    //     controls: !state.controls,
-    //     url: null,
-    //   },
-    //   () => load(url ? url : "")
-    // );
-  };
+    const handleVolumeChange = (e) => {
+      setState({ ...state, volume: parseFloat(e.target.value) });
+    };
 
-  const handleVolumeChange = (e) => {
-    setState({ ...state, volume: parseFloat(e.target.value) });
-  };
+    const handlePlay = () => {
+      console.log("onPlay");
+      setState({ ...state, playing: true });
+    };
 
-  const handleToggleMuted = () => {
-    setState({ ...state, muted: !state.muted });
-  };
+    const handlePause = () => {
+      console.log("onPause");
+      setState({ ...state, playing: false });
+    };
 
-  const handlePlay = () => {
-    console.log("onPlay");
-    setState({ ...state, playing: true });
-  };
+    const handleDuration = (duration) => {
+      console.log("onDuration", duration);
+      setState({ ...state, duration });
+    };
 
-  const handlePause = () => {
-    console.log("onPause");
-    setState({ ...state, playing: false });
-  };
+    const handleProgress = (e: OnProgressProps) => {
+      console.log("onProgress", e);
+      setState({ ...state, progress: e.played });
+      // We only want to update time slider if we are not currently seeking
+      //   if (!state.seeking) {
+      // setState({ ...state, ...e });
+      //   }
+    };
 
-  const handleEnded = () => {
-    console.log("onEnded");
-    setState({ ...state, playing: state.loop });
-  };
+    return (
+      <div className="app">
+        <section className="section">
+          <div className="player-wrapper">
+            <ReactPlayer
+              ref={ref}
+              className="react-player"
+              width="100%"
+              height="100%"
+              url={url}
+              onReady={() => console.log("onReady")}
+              onStart={() => console.log("onStart")}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              onBuffer={() => console.log("onBuffer")}
+              onSeek={(e) => console.log("onSeek", e)}
+              onEnded={handleEnded}
+              onError={(e) => console.log("onError", e)}
+              onDuration={handleDuration}
+              onPlaybackQualityChange={(e) =>
+                console.log("onPlaybackQualityChange", e)
+              }
+              playing={state.playing}
+              volume={state.volume}
+              onProgress={handleProgress}
+              progressInterval={1000}
+            />
+          </div>
 
-  const handleDuration = (duration) => {
-    console.log("onDuration", duration);
-    setState({ ...state, duration });
-  };
-
-  const renderLoadButton = (url, label) => {
-    return <button onClick={() => load(url)}>{label}</button>;
-  };
-
-  const ref = (player) => {
-    setState({ ...state, player: player });
-  };
-
-  //   render() {
-  //     const {
-  //       url,
-  //       playing,
-  //       controls,
-  //       light,
-  //       volume,
-  //       muted,
-  //       loop,
-  //       played,
-  //       loaded,
-  //       playbackRate,
-  //       pip,
-  //     } = this.state;
-  const SEPARATOR = " · ";
-
-  return (
-    <div className="app">
-      <section className="section">
-        <h1>ReactPlayer Demo</h1>
-        <div className="player-wrapper">
-          <ReactPlayer
-            ref={() => {
-              ref;
-            }}
-            className="react-player"
-            width="100%"
-            height="100%"
-            url={url}
-            onReady={() => console.log("onReady")}
-            onStart={() => console.log("onStart")}
-            onPlay={handlePlay}
-            onPause={handlePause}
-            onBuffer={() => console.log("onBuffer")}
-            onSeek={(e) => console.log("onSeek", e)}
-            onEnded={handleEnded}
-            onError={(e) => console.log("onError", e)}
-            onDuration={handleDuration}
-            onPlaybackQualityChange={(e) =>
-              console.log("onPlaybackQualityChange", e)
-            }
-            playing={state.playing}
-            controls={state.controls}
-          />
-        </div>
-
-        <table>
-          <tbody>
-            <tr>
-              <th>Controls</th>
-              <td>
-                <button onClick={handleStop}>Stop</button>
-                <button onClick={handlePlayPause}>
-                  {state.playing ? "Pause" : "Play"}
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <th>Volume</th>
-              <td>
-                <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step="any"
-                  value={state.volume}
-                  onChange={handleVolumeChange}
-                />
-              </td>
-            </tr>
-            <tr>
-              <th>Played</th>
-              <td>
-                <progress max={1} value={state.played} />
-              </td>
-            </tr>
-            <tr>
-              <th>Loaded</th>
-              <td>
-                <progress max={1} value={state.loaded} />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <footer className="footer">
-        Version <strong>0.0.0</strong>
-        {SEPARATOR}
-        <a href="https://github.com/CookPete/react-player">GitHub</a>
-        {SEPARATOR}
-        <a href="https://www.npmjs.com/package/react-player">npm</a>
-      </footer>
-    </div>
-  );
-};
+          <table>
+            <tbody>
+              <tr>
+                <th>Controls</th>
+                <td>
+                  <button onClick={handleStop}>Stop</button>
+                  <button onClick={handlePlayPause}>
+                    {state.playing ? "Pause" : "Play"}
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <th>Volume</th>
+                <td>
+                  <input
+                    type="range"
+                    min={0}
+                    max={1}
+                    step="any"
+                    value={state.volume}
+                    onChange={handleVolumeChange}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th>Played</th>
+                <td>
+                  <progress value={state.progress} />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+    );
+  }
+);
 
 export default YoutubeEmbed;

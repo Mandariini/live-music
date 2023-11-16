@@ -2,7 +2,8 @@ import { useParams } from "react-router-dom";
 import YoutubeEmbed from "./YoutubeEmbed";
 
 import { YouTubeEvent, YouTubePlayer } from "react-youtube";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import ReactPlayer from "react-player";
 
 interface SongInfo {
   id: string;
@@ -47,12 +48,8 @@ const songs: SongInfo[] = [
 const Lobby = () => {
   const [currentSong, setCurrentSong] = useState<SongInfo>();
   const [songList, setSongList] = useState<SongInfo[]>();
-  const [videoElement, setVideoElement] = useState<YouTubePlayer>(null);
 
-  if (videoElement) {
-    console.log(videoElement);
-    videoElement.playVideo();
-  }
+  const playerRef = useRef<ReactPlayer>(null);
 
   const { id } = useParams<{ id: string }>();
 
@@ -61,22 +58,8 @@ const Lobby = () => {
     setSongList(songs);
   }, []);
 
-  const onYoutubeEmbedReady = (event: YouTubePlayer) => {
-    setVideoElement(event.target);
-    console.log(event);
-    // event.target.playVideo();
-
-    event.target.loadVideoById(newSongList[0].videoId);
-  };
-
-  const onYoutubeEmbedStateChange = (event: YouTubeEvent) => {
-    if (event.data === 0) {
-      // Video ended
-      console.log("Video ended");
-
-      // Play next song
-      skipSong();
-    }
+  const handleEnded = () => {
+    console.log("onEnded");
   };
 
   const skipSong = () => {
@@ -86,6 +69,13 @@ const Lobby = () => {
     setCurrentSong(newSongList[0]);
   };
 
+  const funneh = () => {
+    playerRef.current?.seekTo(
+      playerRef.current.getCurrentTime() + 10,
+      "seconds"
+    );
+  };
+
   if (!currentSong || !songList) {
     return <div>No songs playing</div>;
   }
@@ -93,11 +83,14 @@ const Lobby = () => {
   return (
     <div>
       <h2>Lobby {id}</h2>
+      <button onClick={funneh}>Go forwards</button>
       <button onClick={skipSong}>Skip</button>
       <h3>
         Currently playing: {currentSong.fullName} ({currentSong.duration})
         <YoutubeEmbed
+          ref={playerRef}
           url={`https://www.youtube.com/watch?v=${currentSong.videoId}`}
+          handleEnded={handleEnded}
         />
       </h3>
       <ol>
