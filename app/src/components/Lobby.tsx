@@ -75,11 +75,15 @@ const Lobby = () => {
       console.log("Video ended");
 
       // Play next song
-      const newSongList = songList.slice(1);
-      setSongList(newSongList);
-      setCurrentSong(newSongList[0]);
-      videoElement.loadVideoById(newSongList[0].videoId);
+      skipSong();
     }
+  };
+
+  const skipSong = () => {
+    // Play next song
+    const newSongList = songList.slice(1);
+    setSongList(newSongList);
+    setCurrentSong(newSongList[0]);
   };
 
   if (!currentSong || !songList) {
@@ -89,12 +93,11 @@ const Lobby = () => {
   return (
     <div>
       <h2>Lobby {id}</h2>
+      <button onClick={skipSong}>Skip</button>
       <h3>
         Currently playing: {currentSong.fullName} ({currentSong.duration})
         <YoutubeEmbed
-          videoId={currentSong.videoId ? currentSong.videoId : ""}
-          onReady={onYoutubeEmbedReady}
-          onStateChange={onYoutubeEmbedStateChange}
+          url={`https://www.youtube.com/watch?v=${currentSong.videoId}`}
         />
       </h3>
       <ol>
