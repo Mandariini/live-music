@@ -1,1 +1,31 @@
 npm create vite@latest my-app-name -- --template react-ts
+
+testit:
+npm install --save-dev @testing-library/react @testing-library/jest-dom jest-environment-jsdom @babel/preset-env @babel/preset-react
+
+package.json
+"scripts": {
+    // ...
+    "test": "jest"
+  }
+
+"jest": {
+    "testEnvironment": "jsdom"
+  }
+
+create .babelrc
+npm install --save-dev @babel/preset-typescript
+
+{
+  "presets": [
+    "@babel/preset-env",
+    ["@babel/preset-react", { "runtime": "automatic" }],
+    "@babel/preset-typescript"
+  ]
+}
+
+
+for simulating user input:
+npm install --save-dev @testing-library/user-event
+
+for end to end testing: cypress

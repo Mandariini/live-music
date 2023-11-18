@@ -42,6 +42,13 @@ const lobbies: Lobby[] = [
     userCount: 4,
     currentSong: "Daft Punk - One More Time",
   },
+  {
+    id: "vwxy",
+    name: "Forsen",
+    description: "Forsen twitch stream",
+    userCount: 1999,
+    currentSong: "Forsen - FeelsOkayMan",
+  },
 ];
 
 const LobbyList = () => {
@@ -59,7 +66,8 @@ const LobbyList = () => {
         {lobbies.map((lobby) => (
           <li key={lobby.id}>
             <Link to={`/lobby/${lobby.id}`}>{lobby.name}</Link>
-            <div>Users listening {lobby.userCount}</div>
+            <div>Users in lobby: {lobby.userCount}</div>
+            <div>Currently playing: {lobby.currentSong}</div>
           </li>
         ))}
       </ul>

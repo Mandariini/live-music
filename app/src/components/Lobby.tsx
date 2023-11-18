@@ -8,10 +8,8 @@ import ReactPlayer from "react-player";
 interface SongInfo {
   id: string;
   fullName: string;
-  title?: string;
-  artist?: string;
   duration: string;
-  videoId: string;
+  url: string;
   source: string;
 }
 
@@ -19,28 +17,22 @@ const songs: SongInfo[] = [
   {
     id: "1",
     fullName: "Angerfist - Street Fighter",
-    title: "Street Fighter",
-    artist: "Angerfist",
     duration: "3:46",
-    videoId: "6YlX2uItv_s",
+    url: "https://www.youtube.com/watch?v=6YlX2uItv_s",
     source: "youtube",
   },
   {
     id: "2",
     fullName: "Armin van Buuren - Blah Blah Blah",
-    title: "Blah Blah Blah",
-    artist: "Armin van Buuren",
     duration: "3:04",
-    videoId: "uBQ1wt3VZ4M",
+    url: "https://www.youtube.com/watch?v=uBQ1wt3VZ4M",
     source: "youtube",
   },
   {
     id: "3",
     fullName: "Skrillex - Bangarang",
-    title: "Bangarang",
-    artist: "Skrillex",
     duration: "3:35",
-    videoId: "kn59Yn55Pos",
+    url: "https://www.youtube.com/watch?v=kn59Yn55Pos",
     source: "youtube",
   },
 ];
