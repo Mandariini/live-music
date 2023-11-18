@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import YoutubeEmbed from "./YoutubeEmbed";
 
-import { YouTubeEvent, YouTubePlayer } from "react-youtube";
 import { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 
@@ -39,7 +38,7 @@ const songs: SongInfo[] = [
 
 const Lobby = () => {
   const [currentSong, setCurrentSong] = useState<SongInfo>();
-  const [songList, setSongList] = useState<SongInfo[]>();
+  const [songList, setSongList] = useState<SongInfo[]>([]);
 
   const playerRef = useRef<ReactPlayer>(null);
 
@@ -56,9 +55,11 @@ const Lobby = () => {
 
   const skipSong = () => {
     // Play next song
-    const newSongList = songList.slice(1);
-    setSongList(newSongList);
-    setCurrentSong(newSongList[0]);
+    if (songList.length > 0) {
+      const newSongList = songList.slice(1);
+      setSongList(newSongList);
+      setCurrentSong(newSongList[0]);
+    }
   };
 
   const funneh = () => {
