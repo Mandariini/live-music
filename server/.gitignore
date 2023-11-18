@@ -1,5 +1,5 @@
 # build dir
-dist
+build
 
 # npm
 node_modules
@@ -18,3 +18,5 @@ lib/bs
 .esm-cache
 .DS_Store
 .idea
+
+.env
