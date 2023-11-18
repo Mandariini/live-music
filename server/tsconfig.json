@@ -9,6 +9,9 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "typeRoots": ["./src/@types"]
-  }
+    "typeRoots": ["./src/@types", "./node_modules/@types"],
+    "types": ["jest"]
+  },
+  "exclude": ["node_modules"],
+  "include": ["./src/**/*.tsx", "./src/**/*.ts"]
 }

@@ -20,3 +20,4 @@ lib/bs
 .idea
 
 .env
+coverage
