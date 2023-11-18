@@ -37,15 +37,6 @@ const YoutubeEmbed = React.forwardRef(
       progress: 0,
     });
 
-    // const load = (url: string) => {
-    //   setState({
-    //     ...state,
-    //     url: url,
-    //     played: 0,
-    //     loaded: 0,
-    //   });
-    // };
-
     const handlePlayPause = () => {
       setState({ ...state, playing: !state.playing });
     };
