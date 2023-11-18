@@ -1,26 +1,19 @@
-name: Frontend and backend unit tests
+name: Build frontend and run unit tests
 
 on:
   push:
     branches:
       - main
+      - develop
+    paths-ignore:
+      - "server/**"
 
 jobs:
-  backend:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - run: mv -f server/* .
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run test
   frontend:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
+      - run: rm -f server/*
       - run: mv -f app/* .
       - uses: actions/setup-node@v3
         with:
