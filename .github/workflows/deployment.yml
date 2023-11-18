@@ -3,7 +3,7 @@ name: Frontend and backend unit tests
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   backend:
