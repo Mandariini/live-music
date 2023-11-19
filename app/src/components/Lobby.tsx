@@ -1,53 +1,35 @@
 import { useParams } from "react-router-dom";
-import YoutubeEmbed from "./YoutubeEmbed";
-
 import { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 
-interface SongInfo {
-  id: string;
-  fullName: string;
-  duration: string;
-  url: string;
-  source: string;
-}
+import YoutubeEmbed from "./YoutubeEmbed";
 
-const songs: SongInfo[] = [
-  {
-    id: "1",
-    fullName: "Angerfist - Street Fighter",
-    duration: "3:46",
-    url: "https://www.youtube.com/watch?v=6YlX2uItv_s",
-    source: "youtube",
-  },
-  {
-    id: "2",
-    fullName: "Armin van Buuren - Blah Blah Blah",
-    duration: "3:04",
-    url: "https://www.youtube.com/watch?v=uBQ1wt3VZ4M",
-    source: "youtube",
-  },
-  {
-    id: "3",
-    fullName: "Skrillex - Bangarang",
-    duration: "3:35",
-    url: "https://www.youtube.com/watch?v=kn59Yn55Pos",
-    source: "youtube",
-  },
-];
+import lobbyService from "../services/lobbies";
+import { TMedia } from "../types";
 
 const Lobby = () => {
-  const [currentSong, setCurrentSong] = useState<SongInfo>();
-  const [songList, setSongList] = useState<SongInfo[]>([]);
+  const [currentMedia, setCurrentMedia] = useState<TMedia>();
+  const [mediaQueue, setMediaQueue] = useState<TMedia[]>([]);
 
   const playerRef = useRef<ReactPlayer>(null);
 
   const { id } = useParams<{ id: string }>();
 
   useEffect(() => {
-    setCurrentSong(songs[0]);
-    setSongList(songs);
-  }, []);
+    if (!id) {
+      return;
+    }
+
+    lobbyService.getLobby(id).then((lobby) => {
+      //   setLobbyInfo(lobby);
+      setCurrentMedia(lobby.currentMedia);
+      setMediaQueue(lobby.mediaQueue);
+    });
+  }, [id]);
+
+  if (!id) {
+    return <div>Unknown lobby</div>;
+  }
 
   const handleEnded = () => {
     console.log("onEnded");
@@ -55,10 +37,10 @@ const Lobby = () => {
 
   const skipSong = () => {
     // Play next song
-    if (songList.length > 0) {
-      const newSongList = songList.slice(1);
-      setSongList(newSongList);
-      setCurrentSong(newSongList[0]);
+    if (mediaQueue.length > 0) {
+      const newSongList = mediaQueue.slice(1);
+      setMediaQueue(newSongList);
+      setCurrentMedia(newSongList[0]);
     }
   };
 
@@ -69,7 +51,7 @@ const Lobby = () => {
     );
   };
 
-  if (!currentSong || !songList) {
+  if (!currentMedia || !mediaQueue) {
     return <div>No songs playing</div>;
   }
 
@@ -79,16 +61,16 @@ const Lobby = () => {
       <button onClick={funneh}>Go forwards</button>
       <button onClick={skipSong}>Skip</button>
       <h3>
-        Currently playing: {currentSong.fullName} ({currentSong.duration})
+        Currently playing: {currentMedia.title}
         <YoutubeEmbed
           ref={playerRef}
-          url={`https://www.youtube.com/watch?v=${currentSong.videoId}`}
+          url={currentMedia.url}
           handleEnded={handleEnded}
         />
       </h3>
       <ol>
-        {songList.map((song) => (
-          <li key={song.id}>{song.fullName}</li>
+        {mediaQueue.map((media) => (
+          <li key={media.url}>{media.title}</li>
         ))}
       </ol>
     </div>
