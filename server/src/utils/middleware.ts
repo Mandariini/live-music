@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, response } from "express";
 
 import logger from "./logger";
 
@@ -29,7 +29,7 @@ const tokenExtractor = (
 ) => {
   const authorization = request.get("authorization");
   if (authorization && authorization.startsWith("Bearer ")) {
-    request["token"] = authorization.replace("Bearer ", "");
+    response.locals.token = authorization.replace("Bearer ", "");
   }
   next();
 };
