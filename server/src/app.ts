@@ -3,6 +3,7 @@ import cors from "cors";
 
 import lobbyRouter from "./controllers/lobbies";
 import middleware from "./utils/middleware";
+import homeRouter from "./controllers/home";
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(cors());
 app.use(middleware.tokenExtractor);
 app.use(middleware.requestLogger);
 
+app.use("/", homeRouter);
 app.use("/api/v1/lobbies", lobbyRouter);
 
 app.use(middleware.unknownEndpoint);

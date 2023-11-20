@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, response } from "express";
+import { Request, Response, NextFunction } from "express";
 
 import logger from "./logger";
 
@@ -24,7 +24,7 @@ const unknownEndpoint = (_request: Request, response: Response) => {
 
 const tokenExtractor = (
   request: Request,
-  _response: Response,
+  response: Response,
   next: NextFunction
 ) => {
   const authorization = request.get("authorization");

@@ -8,4 +8,11 @@ if (!API_BASE_URL) {
   throw new Error("Backend URL not set");
 }
 
-export default API_BASE_URL;
+const WS_URL: string = import.meta.env.DEV
+  ? import.meta.env.VITE_TEST_WS_URL
+  : import.meta.env.VITE_PROD_WS_URL;
+if (!WS_URL) {
+  throw new Error("Websocket URL not set");
+}
+
+export { WS_URL, API_BASE_URL };

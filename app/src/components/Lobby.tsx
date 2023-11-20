@@ -6,6 +6,8 @@ import YoutubeEmbed from "./YoutubeEmbed";
 
 import lobbyService from "../services/lobbies";
 import { TMedia } from "../types";
+import SocketIoTesting from "./WebSocketTesting";
+import { ConnectionManager } from "./WebSocket/ConnectionManager";
 
 const Lobby = () => {
   const [currentMedia, setCurrentMedia] = useState<TMedia>();
@@ -58,6 +60,9 @@ const Lobby = () => {
   return (
     <div>
       <h2>Lobby {id}</h2>
+      {/* <ConnectionState /> */}
+      <ConnectionManager />
+      <SocketIoTesting />
       <button onClick={funneh}>Go forwards</button>
       <button onClick={skipSong}>Skip</button>
       <h3>

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { TLobby } from "../types";
 
-import API_BASE_URL from "../utils/config";
+import { API_BASE_URL } from "../utils/config";
 
 axios.defaults.baseURL = API_BASE_URL;
 axios.defaults.headers.get["Accept"] = "application/json";

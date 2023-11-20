@@ -23,8 +23,6 @@ interface YoutubeEmbedProps {
 
 const YoutubeEmbed = React.forwardRef(
   ({ url, handleEnded }: YoutubeEmbedProps, ref) => {
-    //   player: ReactPlayerProps["ref"];
-
     const [state, setState] = useState<YoutubeEmbedState>({
       url: url,
       playing: false,
