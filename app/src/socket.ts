@@ -6,4 +6,9 @@ import { WS_URL } from "./utils/config";
 // TODO: Look into socket.io auth token
 // TODO: Connection state recovery
 
-export const socket = io(WS_URL);
+const mediaSocket = io(`${WS_URL}/media`);
+// const chatSocket = io(`${WS_URL}/chat`);
+
+// export { mediaSocket, chatSocket };
+
+export const socket = mediaSocket;

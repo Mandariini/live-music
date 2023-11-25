@@ -5,9 +5,10 @@ import ReactPlayer from "react-player";
 import YoutubeEmbed from "./YoutubeEmbed";
 
 import lobbyService from "../services/lobbies";
-import { TMedia } from "../types";
-import SocketIoTesting from "./WebSocketTesting";
+import { HostAction, TMedia, TSyncMessage } from "../types";
 import { ConnectionManager } from "./WebSocket/ConnectionManager";
+import SocketIoTesting from "./WebSocketTesting";
+import { socket } from "../socket";
 
 const Lobby = () => {
   const [currentMedia, setCurrentMedia] = useState<TMedia>();
@@ -37,6 +38,32 @@ const Lobby = () => {
     console.log("onEnded");
   };
 
+  const onPlay = () => {
+    console.log("onPlay");
+
+    const syncMessage: TSyncMessage = {
+      lobbyId: id,
+      hostAction: HostAction.Playing,
+      mediaId: currentMedia?.url ?? "",
+      videoTimestamp: playerRef.current?.getCurrentTime() ?? 0,
+    };
+
+    socket.emit("hostAction", syncMessage);
+  };
+
+  const onPaused = () => {
+    console.log("onPaused");
+
+    const syncMessage: TSyncMessage = {
+      lobbyId: id,
+      hostAction: HostAction.Stop,
+      mediaId: currentMedia?.url ?? "",
+      videoTimestamp: playerRef.current?.getCurrentTime() ?? 0,
+    };
+
+    socket.emit("hostAction", syncMessage);
+  };
+
   const skipSong = () => {
     // Play next song
     if (mediaQueue.length > 0) {
@@ -60,7 +87,6 @@ const Lobby = () => {
   return (
     <div>
       <h2>Lobby {id}</h2>
-      {/* <ConnectionState /> */}
       <ConnectionManager />
       <SocketIoTesting />
       <button onClick={funneh}>Go forwards</button>
@@ -71,6 +97,8 @@ const Lobby = () => {
           ref={playerRef}
           url={currentMedia.url}
           handleEnded={handleEnded}
+          handlePaused={onPaused}
+          handlePlay={onPlay}
         />
       </h3>
       <ol>

@@ -19,13 +19,15 @@ interface YoutubeEmbedState {
 interface YoutubeEmbedProps {
   url: string;
   handleEnded: () => void;
+  handlePaused: () => void;
+  handlePlay: () => void;
 }
 
 const YoutubeEmbed = React.forwardRef(
-  ({ url, handleEnded }: YoutubeEmbedProps, ref) => {
+  ({ url, handleEnded, handlePaused, handlePlay }: YoutubeEmbedProps, ref) => {
     const [state, setState] = useState<YoutubeEmbedState>({
       url: url,
-      playing: false,
+      playing: true,
       volume: 0.8,
       muted: false,
       played: 0,
@@ -47,15 +49,14 @@ const YoutubeEmbed = React.forwardRef(
       setState({ ...state, volume: parseFloat(e.target.value) });
     };
 
-    const handlePlay = () => {
-      console.log("onPlay");
-      setState({ ...state, playing: true });
-    };
+    // const handlePlay = () => {
+    //   console.log("onPlay");
+    //   setState({ ...state, playing: true });
+    // };
 
-    const handlePause = () => {
-      console.log("onPause");
-      setState({ ...state, playing: false });
-    };
+    // const handlePause = () => {
+    //   setState({ ...state, playing: false });
+    // };
 
     const handleDuration = (duration) => {
       console.log("onDuration", duration);
@@ -84,7 +85,7 @@ const YoutubeEmbed = React.forwardRef(
               onReady={() => console.log("onReady")}
               onStart={() => console.log("onStart")}
               onPlay={handlePlay}
-              onPause={handlePause}
+              onPause={handlePaused}
               onBuffer={() => console.log("onBuffer")}
               onSeek={(e) => console.log("onSeek", e)}
               onEnded={handleEnded}

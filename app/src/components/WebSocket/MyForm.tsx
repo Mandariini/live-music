@@ -1,27 +1,34 @@
 import { useState } from "react";
 import { socket } from "../../socket";
+import { HostAction, TSyncMessage } from "../../types";
 
 export function MyForm() {
   const [value, setValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  function onSubmit(event) {
-    event.preventDefault();
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setIsLoading(true);
 
-    socket.timeout(5000).emit("hello", value, () => {
+    const message: TSyncMessage = {
+      lobbyId: "asd",
+      hostAction: HostAction.Playing,
+      mediaId: "2345",
+      videoTimestamp: 0,
+    };
+
+    // Dont buffer message if connection is dropped
+    socket.emit("hostAction", message, () => {
       setIsLoading(false);
     });
-  }
+  };
 
   return (
     <>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit}>
         <input onChange={(e) => setValue(e.target.value)} />
 
-        <button type="submit" disabled={isLoading}>
-          Submit
-        </button>
+        <button type="submit">Submit</button>
       </form>
     </>
   );

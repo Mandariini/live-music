@@ -7,11 +7,23 @@ import SocketIo from "socket.io";
 
 // const lobbies = new Map<string, WebSocket>();
 
-interface SyncMessage {
-  message: string;
-  meta: string;
-  lobbyId: string;
+// const MESSAGE_FREQUENCY_MS = 1000;
+
+enum HostAction {
+  Playing,
+  Stop,
 }
+
+interface SyncMessage {
+  lobbyId: string;
+  hostAction: HostAction;
+  mediaId: string;
+  videoTimestamp: number;
+  //   timestampUTC: number;
+}
+
+const syncMessages = new Map<string, SyncMessage>();
+// const syncIntervals = new Map<string, NodeJS.Timeout>();
 
 const useWebSocket = (server: http.Server) => {
   const io = new SocketIo.Server(server, {
@@ -20,40 +32,54 @@ const useWebSocket = (server: http.Server) => {
     },
   });
 
-  io.on("connection", function connection(socket) {
+  const mediaIo = io.of("/media");
+
+  const sendSyncMessageToLobby = (lobbyId: string) => {
+    const syncMessage = syncMessages.get(lobbyId);
+
+    console.log(syncMessage);
+
+    if (syncMessage) {
+      mediaIo.to(lobbyId).emit("syncMessage", syncMessage);
+    }
+  };
+
+  // Set up interval to send sync messages every second to all lobbies
+  setInterval(() => {
+    const lobbyIds = Array.from(syncMessages.keys());
+    console.log(lobbyIds);
+    lobbyIds.forEach((lobbyId) => sendSyncMessageToLobby(lobbyId));
+  }, 1000);
+
+  mediaIo.on("connection", function connection(socket) {
     //   const uuid = Math.random().toString(36).substring(2, 15);
 
-    socket.on("open", function open() {
-      socket.send("something");
+    socket.join("1");
+
+    socket.on("disconnect", () => {
+      console.log("User disconnected");
     });
 
-    socket.on("close", function close() {
-      console.log("disconnected");
+    socket.on("joinLobby", (lobbyId) => {
+      console.log("JOIN LOBBY", lobbyId);
+      socket.join(lobbyId);
+      mediaIo.to(lobbyId).emit("message", "New user joined");
     });
 
-    socket.on("hello", (data) => {
-      console.log(`hello: ${data}`);
-      // local vs broadcast
-      socket.local.emit("hello", "all");
-    });
-
-    socket.on("message", (data) => {
-      console.log(`received: ${data}`);
-
-      let message: SyncMessage;
+    socket.on("hostAction", (data) => {
       try {
-        message = JSON.parse(data.toString()) as SyncMessage;
-      } catch (error) {
-        socket.send(JSON.stringify({ error: "invalid message" }));
-        return;
-      }
-      console.log(message.message, message.meta, message.lobbyId);
+        // TODO: authenticate host
 
-      socket.send(
-        JSON.stringify({
-          answer: 42,
-        })
-      );
+        console.log(data);
+
+        const syncMessage = data as SyncMessage;
+
+        syncMessages.set(syncMessage.lobbyId, syncMessage);
+
+        console.log(syncMessages);
+      } catch (e) {
+        console.log(`Host action error: ${e}`);
+      }
     });
   });
 };
